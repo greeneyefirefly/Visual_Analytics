@@ -1,0 +1,167 @@
+---
+title: "R Notebook"
+author: "Samantha Deokinanan"
+date: "August 28, 2020"
+output:
+  html_document: default
+---
+
+**Principles of Data Visualization and Introduction to ggplot2**
+
+I have provided you with data about the 5,000 fastest growing companies in the US, as compiled by Inc. magazine. lets read this in:
+
+```{r, message=FALSE, warning=FALSE}
+# library
+library(tidyverse) # load in ggplot2, amount others I commonly use.
+
+inc <- read.csv("https://raw.githubusercontent.com/charleyferrari/CUNY_DATA_608/master/module1/Data/inc5000_data.csv", header= TRUE)
+```
+
+And lets preview this data:
+
+```{r}
+head(inc)
+```
+```{r}
+summary(inc)
+```
+
+Think a bit on what these summaries mean. Use the space below to add some more relevant non-visual exploratory information you think helps you understand this data:
+
+```{r}
+#1 Let's examine the dataset itself
+dim(inc) # get its dimension
+str(inc) # compactly display the features of the data
+
+#2 Top 5 fastest growing companies
+inc %>% arrange(Rank) %>% head(5) # Arrange Rank and print top 5 cases
+
+#3 Is there at least one fast growing company listed in each state?
+levels(inc$State) # list the levels of State, and note that each represents an individual state, in addition to District of Columbia (DC) and Puerto Rico (PR).
+length(levels(inc$State)) # 52 items, further indicate no state is missing. 
+
+#4 Top 5 States with the most listed companies among the fastest growing companies
+inc %>% count(State, sort = TRUE) %>% head(5)
+
+#5 Top 5 Cities with the most listed companies among the fastest growing companies
+inc %>% count(City, sort = TRUE) %>% head(5)
+
+#6 Top 5 Industry by Mean Revenue
+inc %>% group_by(Industry) %>% summarise(Avg_Revenue = mean(Revenue)) %>%  arrange(desc(Avg_Revenue)) %>% head(5)
+
+#7 Top 5 Industry by Mean Employees
+inc %>% group_by(Industry) %>% summarise(Avg_Employees = mean(Employees)) %>%  arrange(desc(Avg_Employees)) %>% head(5)
+
+#8 Mean Revenue by State
+inc %>% group_by(State) %>%  summarise(Avg_Revenue = mean(Revenue)) %>%  arrange(desc(Avg_Revenue)) 
+
+#9 Correlation of rank with revenue and growth rate
+cor.test(inc$Rank, inc$Revenue) # With r = 0.08 (p < 0.05), there is a very weak correlation.
+cor.test(inc$Rank, inc$Growth_Rate) # With r = -0.40 (p < 0.05), there is a weak correlation.
+```
+
+## Question 1
+
+Create a graph that shows the distribution of companies in the dataset by State (ie how many are in each state). There are a lot of States, so consider which axis you should use. This visualization is ultimately going to be consumed on a 'portrait' oriented screen (ie taller than wide), which should further guide your layout choices.
+
+## Answer 1
+
+A bargraph was selected because it is a good way to represent frequency and compare across levels. The orientation was flipped in order to make it more readable when fit in a portrait layout. A colorblind-friendly theme was selected to consider a general audience.
+
+```{r, fig.width = 7, fig.height = 10}
+# Summarizing the data by State
+compBYstate = inc %>%
+  group_by(State) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count))
+
+# Plotting a bargraph
+p1 = ggplot(compBYstate, aes(x = reorder(State, count), y = count)) + 
+  geom_bar(stat = "identity", fill = "honeydew4") + coord_flip() + 
+  labs(title = "Distribution of the Fastest Growing Companies by State*", 
+       caption = "*District of Columbia (DC) and Puerto Rico (PR) included.", 
+       x = "State", y = "Company Count") +  
+  geom_text(aes(label = count, y = count + 20), vjust = 0.5, size = 3.5)
+p1
+```
+
+The graph above highlights the count of fastest growing companies by State, and it is shows that the state of California is at the top of this list.
+
+## Quesiton 2
+
+Lets dig in on the state with the 3rd most companies in the data set. Imagine you work for the state and are interested in how many people are employed by companies in different industries. Create a plot that shows the average and/or median employment by industry for companies in this state (only use cases with full data, use R's `complete.cases()` function.) In addition to this, your graph should show how variable the ranges are, and you should deal with outliers.
+
+## Answer 2
+
+Once the 3rd State with the most companies was identified, complete cases were selected. Next, outliers were detected. One method of detecting outlier is to identify the values of any data points which lie beyond the extremes of the whiskers, and remove them. Therefore, in order to depict average and/or median employment by industry for companies in this state, while also the variability of the ranges, boxplot provides visual summary of the data allowing quick identification of mean values, the dispersion of the data set, and signs of skewness. Moreover, `ggplot2.stat_summary()`, allow for simple statistical computation be displayed on the graph. Here, the mean of the dataset, with outliers removed, are indicated by the dot. Lastly, because the boxplots are difficult to compare in the normal scale, the data was transformed into a logarithmic scale. 
+
+```{r, fig.width = 8, fig.height = 10, warning = FALSE}
+# Get data on the third state with the most companies
+sprintf("The state with the 3rd most companies is %s.", compBYstate$State[3])
+
+third.state = inc[complete.cases(inc),] %>% filter(State == compBYstate$State[3])
+
+# Detecting and removing outlier
+outliers = boxplot(third.state$Employees ~ third.state$Industry, plot=FALSE)$out
+third.state.out = third.state[-which(third.state$Employees %in% outliers),]
+
+# Plotting a boxplot 
+p2 = ggplot(third.state.out, aes(x = reorder(Industry, Employees), y = log(Employees))) +
+  geom_boxplot(outlier.shape = NA, show.legend = FALSE) + coord_flip() +
+  stat_summary(fun.y = mean, col = "honeydew4", geom = 'point') +
+  labs(x = "Industry", y = "Average Number of Employees, in logarithmic scale", title = "Average Employee Size by Industry", subtitle = "average given by dot")
+p2
+```
+
+Even with outliers removed from the data, the skewness within most industries can be clearly seen and there are likely to be a differences among them
+
+## Question 3
+
+Now imagine you work for an investor and want to see which industries generate the most revenue per employee. Create a chart that makes this information clear. Once again, the distribution per industry should be shown.
+
+## Answer 3
+
+Back to using the full dataset and summarizing it to see which industries generate the most revenue per employee. Below are two informative ways of presenting the data. The first graph depicts a barplot of the average revenue earned by industry but also highlights the distribution of the number of employees within a specific industry. Secondly, not only does the second bargraph depicts the average revenue earned by industry, but it highlights the distribution of the number of companies within a specific industry.
+
+```{r, fig.width = 8, fig.height = 10}
+# Revenue per employee by industry
+revenue = inc[complete.cases(inc),] %>%
+  group_by(Industry) %>%
+  summarise(count = n(), Revenue = sum(Revenue), Employees = sum(Employees)) %>%
+  mutate(rev.per.employee = Revenue / Employees )
+
+# Plotting a bargraph, number of employees per industry shown
+p3 = ggplot(revenue, aes(x = reorder(Industry, rev.per.employee), y = rev.per.employee)) + 
+  geom_bar(stat = "identity", aes(fill = Employees)) + coord_flip() +
+  scale_y_continuous(labels = scales::dollar_format(scale = .001, suffix = "K")) +
+  labs(title = "Revenue per Employee by Industry", x = "Industry", 
+       y = "Revenue per Employee, in US$", fill = "# of Employees") +
+  geom_text(data = filter(revenue, rev.per.employee > 10^6),
+            aes(x = Industry, y = rev.per.employee, label=scales::dollar_format()(rev.per.employee)), 
+            hjust = 1.1, vjust = 0.4, color = "white", size = 3.5) +
+  geom_text(data = filter(revenue, rev.per.employee < 10^6),
+            aes(x = Industry, y = rev.per.employee, label=scales::dollar_format()(rev.per.employee)), 
+            hjust = -0.1, vjust = 0.4, color = "black", size = 3.5) 
+p3
+```
+
+It is clear that computer hardware earns the most revenue among industries based on its average of \$1,223,564. The graph above also reveals that there is less than 50,000 employees within this industry among the fastest growing companies of the United States. Whereas, human resources earns an average revenue of \$40,735 per employee, and there is more than 200,000 employees within this industry among the fastest growing companies of the United States.
+
+```{r, fig.width = 8, fig.height = 10}
+# Plotting a bargraph, number of organization per industry shown
+
+p4 = ggplot(revenue, aes(x = reorder(Industry, rev.per.employee), y = rev.per.employee)) + 
+  geom_bar(stat = "identity", aes(fill = count)) + coord_flip() +
+  scale_y_continuous(labels = scales::dollar_format(scale = .001, suffix = "K")) +
+  labs(title = "Revenue per Employee by Industry", x = "Industry", 
+       y = "Revenue per Employee, in US$", fill = "# of Companies") +
+  geom_text(data = filter(revenue, rev.per.employee > 10^6),
+            aes(x = Industry, y = rev.per.employee, label=scales::dollar_format()(rev.per.employee)), 
+            hjust = 1.1, vjust = 0.4, color = "white", size = 3.5) +
+  geom_text(data = filter(revenue, rev.per.employee < 10^6),
+            aes(x = Industry, y = rev.per.employee, label=scales::dollar_format()(rev.per.employee)), 
+            hjust = -0.1, vjust = 0.4, color = "black", size = 3.5) 
+p4
+```
+
+This graph also clearly shows that computer hardware earns the most revenue among industries. But it also highlights that there is less than 200 companies within this industry among the fastest growing companies of the United States. Whereas, human resources, which earns an average revenue of \$40,735 per employee, ranges within 200 - 400 companies within this industry among the fastest growing companies of the United States. From this graph, it further reveals that IT service industry has the most companies among the fastest growing companies of the United States, and earns an average revenue of \$199,683 per employee.
