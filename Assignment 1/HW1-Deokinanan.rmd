@@ -6,6 +6,8 @@ output:
   html_document: default
 ---
 
+**RPUB LINK**: https://rpubs.com/greeneyefirefly/data608-hw1
+
 **Principles of Data Visualization and Introduction to ggplot2**
 
 I have provided you with data about the 5,000 fastest growing companies in the US, as compiled by Inc. magazine. lets read this in:
