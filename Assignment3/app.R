@@ -47,7 +47,7 @@ ui = fluidPage(
                selectInput("cause", "Cause of Death:", sort(cause2010))),
              mainPanel(plotlyOutput("PlotMortalityRates", height = 800))),
     tabPanel("Q2: National Average",
-             titlePanel("Mortality Rates Over Time, by States"),
+             titlePanel("Mortality Rates Over Time with National Average"),
              sidebarPanel(
                selectInput('causes', 'Cause of Death', sort(causes)),
                selectInput('states', 'State', sort(states))),
@@ -93,9 +93,16 @@ server = function(input, output, session){
                 name = 'State Rate') %>%
       add_lines(x = natavg$Year, y = round(natavg$Crude.Rate,3), color = I("#1a9263"), 
                 name = 'National Average Rate') %>%
-      layout(title = sprintf("Morality Rates for the State of %s vs the National Average", input$states),
-             xaxis = list(title = "Year"),
-             yaxis = list(title = "Morality Rates"))
+      layout(xaxis = list(title = "Year"),
+             yaxis = list(title = "Morality Rates"),
+             margin = list(l = 20, r = 20, b = 20, t = 50, pad = 4),
+             annotations = list(
+               list(x = 0 , y = 1.16, 
+                    text = sprintf("Morality Rates for the State of %s vs the National Average",
+                                   input$states), 
+                    showarrow = FALSE, xref = 'paper', yref = 'paper', font = list(size = 15)),
+               list(x = 0 , y = 1.1, text = str_to_title(input$causes), 
+                    showarrow = FALSE, xref = 'paper', yref = 'paper')))
   })
 }
 
