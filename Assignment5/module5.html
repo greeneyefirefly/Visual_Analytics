@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title> CUNY Data 608 Module 5 </title>
+	<h4> CUNY SPS MSDS Data 608 </h4>
+	<h4> Module #5 </h4>
+	<h4> Samantha Deokinanan </h4>
+	<hr>
+	<script type="text/javascript"></script>
+	<script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+	<script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+
+<body>
+	<h3> Part 1a: Reverse-A-Word </h3>
+	<p> Enter a word to have its order reverse: </p>
+	<script type="text/javascript">
+	function reverser(word) {
+		return word.split("").reverse().join("");
+	};
+
+	function reverseAword() {
+		var temp = document.getElementById("InputWord");
+		temp.innerHTML = reverser(document.getElementById('word').value);
+	}
+	</script>
+	<form name="part1a">
+		<input id="word" type="str" placeholder="Type word here" size="20">
+		<input type="button" value="Reverse!" onClick="reverseAword();"> </form>
+	<br>
+	<div id="InputWord"></div>
+</body>
+
+<body>
+	<h3> Part 1b: First Twenty Multiples </h3>
+	<p> Enter a number to find its first twenty multiples: </p>
+	<style>
+	table {
+		border-collapse: collapse;
+	}
+	td,
+	th {
+		border: 1px solid #999;
+		padding: 0.2rem;
+		text-align: left;
+	}
+	</style>
+	<script type="text/javascript">
+	function multiple(num) {
+		var table = "";
+		for(var i = 1; i <= 5; i++) {
+			var M = '<tr>' + 
+					'<td>' + num * (4 * i - 3) + '</td>' + 
+					'<td>' + num * (4 * i - 2) + '</td>' + 
+					'<td>' + num * (4 * i - 1) + '</td>' + 
+					'<td>' + num * (4 * i - 0) + '</td> </tr>';
+			table = table + M;
+		}
+		table = '<table>' + table + '</table>';
+		return table;
+	};
+
+	function TwentyMultiples() {
+		var temp = document.getElementById("InputNumber");
+		temp.innerHTML = multiple(document.getElementById('num').value);
+	}
+	</script>
+	<form name="part1b">
+		<input id="num" type="number" placeholder="Enter number here" size="4">
+		<input type="button" value="Get Multiples!" onClick="TwentyMultiples();"> </form>
+	<br>
+	<div id="InputNumber"></div>
+</body>
+
+<body>
+	<hr>
+	<form name="part2">
+		<h3> Part 2 - Presidents' Height-Weight </h3>
+		<p> Enter the name of a President whose height and weight you are curious about: </p>
+		<p> <input id="filter_president" type="text" placeholder="Search for President" /> </p>
+		<div id="president"></div>
+	</form>
+	<style>
+	td,
+	th {
+		width: 6rem;
+		height: 1rem;
+		border: 1px solid #ccc;
+		text-align: center;
+	}
+	th {
+		background: lightblue;
+		border-color: white;
+	}
+	body {
+		padding: 0.2rem;
+	}
+	</style>
+	<script>
+	$(document).ready(function() {
+		var president_table = "<table> <thead> <tr> <th> President </th> <th> Height </th> <th> Weight </th> </tr> </thead>";
+		var filter = {};
+		d3.csv("https://raw.githubusercontent.com/greeneyefirefly/DATA608-Visual_Analytics/master/Assignment5/presidents.csv").then(function(data) {
+			var temp = president_table;
+			data.forEach(function(row) {
+				var name = row['Name'].toLowerCase();
+				var table = "<tr id='" + name + "'class='filterable'> <td>" + 
+							row['Name'] + '</td> <td>' + 
+							row['Height'] + '</td> <td>' + 
+							row['Weight'] + '</td> </tr>';
+				temp += table;
+				filter[name] = table;
+			});
+			$('#president').html(temp + '</table>');
+		});
+
+		function filterOn(filter, filter_text = "") {
+			var temp = president_table;
+			var found = 0;
+			$.each(filter, function(name, table) {
+				if(name.includes(filter_text)) {
+					temp += table;
+					found += 1;
+				}
+			});
+			if(found == 0) {
+				temp += '<tr> <td colspan=3> Not Found </td> </tr>';
+			}
+			$('#president').html(temp + '</table>');
+		}
+		$('#filter_president').keyup(function() {
+			var filter_text = $(this).val().toLowerCase();
+			filterOn(filter, filter_text);
+		});
+	});
+	</script>
+</body>
+
+</html>
