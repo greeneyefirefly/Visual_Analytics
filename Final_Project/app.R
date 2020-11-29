@@ -32,11 +32,11 @@ air_toxin_picklist = c("Benzene (C6H6)", "Formaldehyde (CH2O)", "Fine Particulat
                        "Nitrogen Dioxide (NO2)", "Ozone (O3)", "Sulfur Dioxide (SO2)")
 air_toxin_header = c("geo_area_id", "geo_area_name", 
                      "c6h6.2005", "c6h6.2011", 
-                     "ch2o.2005", "ch2O.2011",
+                     "ch2o.2005", "ch2o.2011",
                      "pm2.5.2009","pm2.5.2010","pm2.5.2011","pm2.5.2012",
                      "pm2.5.2013","pm2.5.2014","pm2.5.2015","pm2.5.2016",
-                     "NO2.2009","NO2.2010","NO2.2011","NO2.2012",
-                     "NO2.2013","NO2.2014","NO2.2015","NO2.2016",
+                     "no2.2009","no2.2010","no2.2011","no2.2012",
+                     "no2.2013","no2.2014","no2.2015","no2.2016",
                      "o3.sum.2009","o3.sum.2010","o3.sum.2011",
                      "o3.sum.2012","o3.sum.2013","o3.sum.2014","o3.sum.2015",
                      "o3.sum.2016", "so2.2009","so2.2010","so2.2011","
