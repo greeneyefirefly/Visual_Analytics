@@ -10,7 +10,8 @@ library(plotly)
 library(rgeos)
 library(maptools)
 library(rjson)
-library(viridis)
+
+Sys.setlocale("LC_ALL", "C")
 
 # Loading Data Sets
 urlRemote = "https://raw.githubusercontent.com/"
@@ -47,13 +48,13 @@ names(air_toxin) = air_toxin_header
 pm2.5 = airquality[,c(2,3,15:22,87:101)]
 
 pm2.5_header = c("geo_area_id", "geo_area_name", 
-                     "pm2.5.2009","pm2.5.2010","pm2.5.2011","pm2.5.2012",
-                     "pm2.5.2013","pm2.5.2014","pm2.5.2015","pm2.5.2016",
-                     "er.adult.05.07","er.adult.09.11","er.adult.12.14",
-                     "er.kids.05.07","er.kids.09.11","er.kids.12.14",
-                     "cardio.adult.05.07","cardio.adult.09.11","cardio.adult.12.14",
-                     "death.adult.05.07","death.adult.09.11","death.adult.12.14",
-                     "resp.adult.05.07","resp.adult.09.11","resp.adult.12.14") 
+                 "pm2.5.2009","pm2.5.2010","pm2.5.2011","pm2.5.2012",
+                 "pm2.5.2013","pm2.5.2014","pm2.5.2015","pm2.5.2016",
+                 "er.adult.05.07","er.adult.09.11","er.adult.12.14",
+                 "er.kids.05.07","er.kids.09.11","er.kids.12.14",
+                 "cardio.adult.05.07","cardio.adult.09.11","cardio.adult.12.14",
+                 "death.adult.05.07","death.adult.09.11","death.adult.12.14",
+                 "resp.adult.05.07","resp.adult.09.11","resp.adult.12.14") 
 names(pm2.5) = pm2.5_header
 
 # Nitrogen Dioxide (NO2)
@@ -98,15 +99,18 @@ ui = fluidPage(
              p("Clean air is vital as it provides oxygen and other gases that sustain the delicate balance of life on Earth. However, the quality of the air can be affected by air pollution. Air pollution occurs when certain gases and particles build up in the atmosphere to such levels that they can cause disease, death to humans, damage to other living organisms such as food crops, or damage to the natural or man-made environment. These substances, known as pollutants, can be solid particles, liquid droplets, or gases, and are classified as primary or secondary pollutants."),
              p("The primary pollutant tends to come from man-made sources, including the burning of fossil fuels such as coal, oil, petrol or diesel, but can also come from natural sources such as volcanic eruptions and forest fires. Unlike primary pollutants, secondary pollutants are not emitted directly. Rather, they form in the air when primary pollutants as a result of chemical reactions. The federal Clean Air Act authorized the Environmental Protection Agency (EPA) to set National Ambient Air Quality Standards (NAAQS) for pollutants that threaten human health and public welfare throughout the country, (Clean Air Act, EPA). EPA established NAAQS for six most common pollutants called criteria air pollutants: ground-level ozone, fine particulate matter, carbon monoxide, nitrogen dioxide, sulfur dioxide, and volatile organic compounds (eg Benzene and Formaldehyde), among which ground level ozone, fine particulate and nitrogen dioxide are the most widespread health threats."),
              br(),
+             h4(p(strong("NYC Air Pollution Data"))),
+             p("The aim is to interactively present data on primary and secondary air pollutants index, namely for PM2.5, nitrogen dioxide (NO2), volatile organic compounds, and ozone, to determine their effects on the air quality and health in New York City. More specifically, it aims to geographically map user's neighborhood air quality and compare it to New York City and EPA's annual standards. The data set is from NYCCAS Air Pollution Rasters on NYC OpenData. It is a citywide raster files of annual average predicted surface for nitrogen dioxide (NO2), fine particulate matter (PM2.5), black carbon (BC), and nitrogen oxides (NOx); summer average for ozone (O3) and winter average for sulfure dioxide (SO2). File type is ESRI grid raster files at 300 m resolution, NAD83 New York Long Island State Plane FIPS, feet projection. Prediction surface generated from Land Use Regression modeling of December 2008- December 2015 (years 1-7) New York Community Air Survey monitoring data. As these are estimated annual average levels produced by a statistical model, they are not comparable to short term localized monitoring or monitoring done for regulatory purposes."),
+             br(),
              h3(p(strong("Your Neighborhood Air Quality", 
                          style = "color:black")), align = "center"),
-             p("Use the map to compare your neighborhood's levels of harmful air toxin with that of New York City", align = "center"),
+             p("The map below is of New York City. The air quality monitoring network data allows a comparision of the concentraion of most harmful air toxins among neighborhoods. Use the map to compare your neighborhood's levels of harmful air toxin with that of New York City", align = "center"),
              br(),
              sidebarPanel(
                textInput('user_zip', "Enter your zipcode", value = "11208"),
                selectInput('user_air_toxin', "Select Air Toxin", sort(air_toxin_picklist))),
              mainPanel(plotlyOutput("MyNYC"))
-             ),
+    ),
     
     tabPanel("PM2.5",
              titlePanel("Particulate Matter Effect on Health"),
@@ -114,6 +118,7 @@ ui = fluidPage(
              br(),
              h4(p(strong("Your Neighborhood PM2.5 Concentration", style = "color:black")), 
                 align = "center"),
+             p("For PM2.5, NYC meets the EPA's annual average standard, but short-term concentrations sometimes exceed this threshold. Use the graph to estimate a neighborhood's health risk as it pertains to PM2.5", align = "center"),
              sidebarPanel(
                textInput('user_zip_pm25', 'Enter your zipcode', value = "11208")),
              mainPanel(
@@ -123,16 +128,17 @@ ui = fluidPage(
                  tabPanel("Cardiovascular Hospitalizations", plotlyOutput("cardio.pm2.5")),
                  tabPanel("Respiratory Hospitalizations", plotlyOutput("resp.pm2.5")),
                  tabPanel("Death Rates", plotlyOutput("death.pm2.5"))
-                 )
-               ),
+               )
              ),
-             
+    ),
+    
     tabPanel("NO2 & SO2",
              titlePanel("Nitrogen and Sulfur Dioxide Effects on Health"), 
              p("Moreover, in significant concentrations, primary pollutant nitrogen dioxide is highly toxic. It can cause serious lung damage with a delayed effect. It also plays a major role in the atmospheric reactions that produce ground-level ozone or smog. Whereas sulfur dioxide pollution is known to cause heart disease and bronchitis. Pollutants have even more adverse effect when in moderate concentrations as it can lead to a fall in lung function in asthmatics. Sulfur dioxide pollution is considered more harmful when particulate and other pollution concentrations are high. This is known as the cocktail effect. Increasing concentration of these gases in the atmosphere also causes global warming and climate change as dinitrogen monoxide has 310 times more global warming potentiality than carbon dioxide (Sen et al, 2017)."),
              br(),
              h4(p(strong("Your Neighborhood NO2 & SO2 Concentration", style = "color:black")), 
                 align = "center"),
+             p("For NO2 and SO2, NYC meets the EPA's annual average standard, but short-term concentrations sometimes exceed this threshold. Use the graph to estimate a neighborhood's health risk as it pertains to their concentrations.", align = "center"),
              sidebarPanel(
                textInput('user_zip_no2_so2', 'Enter your zipcode', value = "11208")),
              mainPanel(
@@ -149,6 +155,7 @@ ui = fluidPage(
              br(),
              h4(p(strong("Your Neighborhood Ozone Concentration", style = "color:black")), 
                 align = "center"),
+             p("For Ozone, NYC meets the EPA's annual average standard, but short-term concentrations sometimes exceed this threshold. Use the graph to estimate a neighborhood's health risk as it pertains to ozone levels.", align = "center"),
              sidebarPanel(
                textInput('user_zip_o3', 'Enter your zipcode', value = "11208")),
              mainPanel(
@@ -169,7 +176,7 @@ ui = fluidPage(
              p("NYC OpenData. NYCCAS Air Pollution Rasters. Department of Health and Mental Hygiene (DOHMH).Updated March 3, 2020. Accessed 28 October 2020."),
              p("WHO, (2005). WHO Air Quality Guidelines for Particulate Matter, Ozone, Nitrogen Dioxide, and Sulfur Dioxide. World Health Organization: Geneva."),
              p("Sen, Abhishek & Khan, Indrani & Kundu, Debajyoti & Das, Kousik & Datta, Jayanta. (2017). Ecophysiological evaluation of tree species for biomonitoring of air quality and identification of air pollution-tolerant species. Environmental Monitoring and Assessment. 189. 1-15. 10.1007/s10661-017-5955-x."),
-             )
+    )
   ),
   hr(),
   p(em("Developed by"), 
@@ -180,580 +187,581 @@ ui = fluidPage(
 # ----------------------------------------
 # Define Server Logic
 server = function(input, output, session) {
-    output$MyNYC = renderPlotly({
-        # Data based on User Inputs
-        user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip)))
-        user_toxin = air_toxin[air_toxin$geo_area_id == user_location$UHF.Code, 
-                               grepl(gsub("[\\(\\)]", "", 
-                                          regmatches(tolower(input$user_air_toxin), 
-                                                     gregexpr("\\(.*?\\)", 
-                                                              tolower(input$user_air_toxin)))[[1]]), 
-                                     colnames(air_toxin))]
-        user_toxin$user_avg = rowMeans(user_toxin)
-        
-        # NYC data
-        nyc_toxin = cbind(district = air_toxin$geo_area_id,
-                          district_name = air_toxin$geo_area_name,
-                          air_toxin[,grepl(gsub("[\\(\\)]", "", 
-                                                regmatches(tolower(input$user_air_toxin), 
-                                                           gregexpr("\\(.*?\\)", 
-                                                                    tolower(input$user_air_toxin)))[[1]]), 
-                                           colnames(air_toxin))])
-        nyc_toxin$nyc_avg = rowMeans(nyc_toxin[,-c(1,2)])
-        
-        title = paste0("Average ", input$user_air_toxin, " levels in NYC.")
-        bar_title = paste0(gsub("[\\(\\)]", "", 
-                                regmatches(input$user_air_toxin,
-                                           gregexpr("\\(.*?\\)", 
-                                                    input$user_air_toxin))[[1]]), 
-                                                    " levels")
-        plot_ly(text = nyc_toxin$district_name) %>% 
-            add_trace(type = "choropleth", 
-                      geojson = nyc_districts,
-                      locations = nyc_toxin$district,
-                      z = nyc_toxin$nyc_avg,
-                      colorscale = "Viridis",
-                      featureidkey = "properties.uhfcode") %>% 
-            layout(geo = list(fitbounds = "locations", visible = FALSE), 
-                   title = title,
-                   autosize = TRUE,
-                   annotations = list(
-                       list(x = 0 , y = 1, 
-                            text = sprintf("%s Average = %1.2f", 
-                                           user_location$Neighborhood, user_toxin$user_avg), 
-                            showarrow = FALSE, xref = 'paper', 
-                            yref = 'paper', font = list(size = 13)))) %>% 
-            colorbar(title = bar_title)
-    })
-
-    output$pm2.5 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_pm25)))
-      user_pm2.5 = pm2.5[pm2.5$geo_area_id == user_location$UHF.Code,]
-      user_pm2.5$user_avg_pm2.5 = rowMeans(user_pm2.5[,c(3:10)])
-
-      # NYC PM2.5 data
-      pm2.5$nyc_avg = rowMeans(pm2.5[, c(3:10)])
-      pm2.5_nyc_avg = mean(pm2.5$nyc_avg)
-      
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-     
-      plot_ly(pm2.5, 
-              x = reorder(pm2.5$nyc_avg, pm2.5$geo_area_name), 
-              y = ~ nyc_avg, 
-              type = 'bar',
-              text = pm2.5$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "%{yaxis.title.text}: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "PM2.5"),
-               barmode = 'group',
-               annotations = list(
-                 list(x = 0, y = 1,
-                      text = sprintf("EPA standard: 12 ug/m^3"),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("NYC average: %1.2f ug/m^3", 
-                                     pm2.5_nyc_avg),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.90, 
-                      text = sprintf("%s average: %1.2f ug/m^3", 
-                                     user_location$Neighborhood, user_pm2.5$user_avg_pm2.5),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
-      
-    output$er.pm2.5 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_pm25)))
-      user_pm2.5 = pm2.5[pm2.5$geo_area_id == user_location$UHF.Code,]
-      user_pm2.5$user_avg_er_adult = rowMeans(user_pm2.5[,c(11:13)])
-      user_pm2.5$user_avg_er_kid = rowMeans(user_pm2.5[,c(14:16)])
-      
-      # NYC PM2.5 data
-      pm2.5$nyc_avg_adult = rowMeans(pm2.5[, c(11:13)])
-      pm2.5_nyc_avg_adult = mean(pm2.5$nyc_avg_adult)
-      pm2.5$nyc_avg_kid = rowMeans(pm2.5[, c(14:16)])
-      pm2.5_nyc_avg_kid = mean(pm2.5$nyc_avg_kid)
-      
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-      
-      plot_ly(pm2.5, 
-              x = reorder(pm2.5$nyc_avg_adult, pm2.5$geo_area_name), 
-              y = ~ nyc_avg_adult, 
-              type = 'bar', 
-              text = pm2.5$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "Adults - 18 yrs & older: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>% 
-        add_trace(y = ~nyc_avg_kid,  
-                  text = pm2.5$geo_area_name,
-                  hovertemplate = paste("<b>%{text}</b><br>",
-                                        "Children - 0 to 17 yrs: %{y:1.2f}<br>",
-                                        "<extra></extra>"),
-                  marker = list(color = 'rgb(204,204,204)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "Asthma ER Visits per 100K adults/children"),
-               barmode = 'group',
-               showlegend = FALSE,
-               annotations = list(
-                 list(x = 0, y = 1, 
-                      text = sprintf("NYC average: %1.2f per 100K adults & %1.2f per 100K children", 
-                                     pm2.5_nyc_avg_adult, pm2.5_nyc_avg_kid),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("%s average: %1.2f per 100K adults &  %1.2f per 100K children", 
-                                     user_location$Neighborhood,
-                                     user_pm2.5$user_avg_er_adult, 
-                                     user_pm2.5$user_avg_er_kid),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
+  output$MyNYC = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip)))
+    user_toxin = air_toxin[air_toxin$geo_area_id == user_location$UHF.Code, 
+                           grepl(gsub("[\\(\\)]", "", 
+                                      regmatches(tolower(input$user_air_toxin), 
+                                                 gregexpr("\\(.*?\\)", 
+                                                          tolower(input$user_air_toxin)))[[1]]), 
+                                 colnames(air_toxin))]
+    user_toxin$user_avg = rowMeans(user_toxin)
     
-    output$cardio.pm2.5 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_pm25)))
-      user_pm2.5 = pm2.5[pm2.5$geo_area_id == user_location$UHF.Code,]
-      user_pm2.5$user_avg_adult = rowMeans(user_pm2.5[,c(17:19)])
-
-      # NYC PM2.5 data
-      pm2.5$nyc_avg_adult = rowMeans(pm2.5[, c(17:19)])
-      pm2.5_nyc_avg_adult = mean(pm2.5$nyc_avg_adult)
-
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-      
-      plot_ly(pm2.5, 
-              x = reorder(pm2.5$nyc_avg_adult, pm2.5$geo_area_name), 
-              y = ~ nyc_avg_adult, 
-              type = 'bar', 
-              text = pm2.5$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "Adults - 40 yrs & older: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "Cardiovascular Hospitalizations per 100K adults"),
-               barmode = 'group',
-               showlegend = FALSE,
-               annotations = list(
-                 list(x = 0, y = 1, 
-                      text = sprintf("NYC average: %1.2f per 100K adults", 
-                                     pm2.5_nyc_avg_adult),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("%s average: %1.2f per 100K adults", 
-                                     user_location$Neighborhood,
-                                     user_pm2.5$user_avg_adult),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
+    # NYC data
+    nyc_toxin = cbind(district = air_toxin$geo_area_id,
+                      district_name = air_toxin$geo_area_name,
+                      air_toxin[,grepl(gsub("[\\(\\)]", "", 
+                                            regmatches(tolower(input$user_air_toxin), 
+                                                       gregexpr("\\(.*?\\)", 
+                                                                tolower(input$user_air_toxin)))[[1]]), 
+                                       colnames(air_toxin))])
+    nyc_toxin$nyc_avg = rowMeans(nyc_toxin[,-c(1,2)])
     
-    output$resp.pm2.5 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_pm25)))
-      user_pm2.5 = pm2.5[pm2.5$geo_area_id == user_location$UHF.Code,]
-      user_pm2.5$user_avg_adult = rowMeans(user_pm2.5[,c(23:25)])
-      
-      # NYC PM2.5 data
-      pm2.5$nyc_avg_adult = rowMeans(pm2.5[, c(23:25)])
-      pm2.5_nyc_avg_adult = mean(pm2.5$nyc_avg_adult)
-      
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-      
-      plot_ly(pm2.5, 
-              x = reorder(pm2.5$nyc_avg_adult, pm2.5$geo_area_name), 
-              y = ~ nyc_avg_adult, 
-              type = 'bar', 
-              text = pm2.5$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "Adults - 20 yrs & older: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "Respiratory Hospitalizations per 100K adults"),
-               barmode = 'group',
-               showlegend = FALSE,
-               annotations = list(
-                 list(x = 0, y = 1, 
-                      text = sprintf("NYC average: %1.2f per 100K adults", 
-                                     pm2.5_nyc_avg_adult),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("%s average: %1.2f per 100K adults", 
-                                     user_location$Neighborhood,
-                                     user_pm2.5$user_avg_adult),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
+    title = paste0("Average ", input$user_air_toxin, " levels in NYC.")
+    bar_title = paste0(gsub("[\\(\\)]", "", 
+                            regmatches(input$user_air_toxin,
+                                       gregexpr("\\(.*?\\)", 
+                                                input$user_air_toxin))[[1]]), 
+                       " levels")
+    plot_ly(text = nyc_toxin$district_name) %>% 
+      add_trace(type = "choropleth", 
+                geojson = nyc_districts,
+                locations = nyc_toxin$district,
+                z = nyc_toxin$nyc_avg,
+                colorscale = "Viridis",
+                featureidkey = "properties.uhfcode") %>% 
+      layout(geo = list(fitbounds = "locations", visible = FALSE), 
+             title = title,
+             autosize = TRUE,
+             annotations = list(
+               list(x = 0 , y = 1, 
+                    text = sprintf("%s Average = %1.2f", 
+                                   user_location$Neighborhood, user_toxin$user_avg), 
+                    showarrow = FALSE, xref = 'paper', 
+                    yref = 'paper', font = list(size = 13)))) %>% 
+      colorbar(title = bar_title)
+  })
+  
+  output$pm2.5 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_pm25)))
+    user_pm2.5 = pm2.5[pm2.5$geo_area_id == user_location$UHF.Code,]
+    user_pm2.5$user_avg_pm2.5 = rowMeans(user_pm2.5[,c(3:10)])
     
-    output$death.pm2.5 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_pm25)))
-      user_pm2.5 = pm2.5[pm2.5$geo_area_id == user_location$UHF.Code,]
-      user_pm2.5$user_avg_adult = rowMeans(user_pm2.5[,c(20:22)])
-      
-      # NYC PM2.5 data
-      pm2.5$nyc_avg_adult = rowMeans(pm2.5[, c(20:22)])
-      pm2.5_nyc_avg_adult = mean(pm2.5$nyc_avg_adult)
-      
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-      
-      plot_ly(pm2.5, 
-              x = reorder(pm2.5$nyc_avg_adult, pm2.5$geo_area_name), 
-              y = ~ nyc_avg_adult, 
-              type = 'bar', 
-              text = pm2.5$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "Adults - 30 yrs & older: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "Death Rate per 100K adults"),
-               barmode = 'group',
-               showlegend = FALSE,
-               annotations = list(
-                 list(x = 0, y = 1, 
-                      text = sprintf("NYC average: %1.2f per 100K adults", 
-                                     pm2.5_nyc_avg_adult),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("%s average: %1.2f per 100K adults", 
-                                     user_location$Neighborhood,
-                                     user_pm2.5$user_avg_adult),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
+    # NYC PM2.5 data
+    pm2.5$nyc_avg = rowMeans(pm2.5[, c(3:10)])
+    pm2.5_nyc_avg = mean(pm2.5$nyc_avg)
     
-    output$no2 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_no2_so2)))
-      user_no2 = no2[no2$geo_area_id == user_location$UHF.Code,]
-      user_no2$user_avg = rowMeans(user_no2[,c(3:10)])
-      user_no2$user_avg_w = rowMeans(user_no2[,c(11:18)])
-      user_no2$user_avg_su = rowMeans(user_no2[,c(19:26)])
-      
-      # NYC no2 data
-      no2$nyc_avg = rowMeans(no2[, c(3:10)])
-      no2_nyc_avg = mean(no2$nyc_avg)
-      no2$nyc_avg_w = rowMeans(no2[, c(11:18)])
-      no2_nyc_avg_w = mean(no2$nyc_avg_w)
-      no2$nyc_avg_su = rowMeans(no2[, c(19:26)])
-      no2_nyc_avg_su = mean(no2$nyc_avg_su)
-      
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-      
-      plot_ly(no2, 
-              x = reorder(no2$nyc_avg, no2$geo_area_name), 
-              y = ~ nyc_avg, 
-              type = 'bar', 
-              text = no2$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "Average: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>% 
-        add_trace(y = ~nyc_avg_w,  
-                  text = no2$geo_area_name,
-                  hovertemplate = paste("<b>%{text}</b><br>",
-                                        "Winter: %{y:1.2f}<br>",
-                                        "<extra></extra>"),
-                  marker = list(color = 'rgb(31, 147, 78)')) %>% 
-        add_trace(y = ~nyc_avg_su,  
-                  text = no2$geo_area_name,
-                  hovertemplate = paste("<b>%{text}</b><br>",
-                                        "Summer: %{y:1.2f}<br>",
-                                        "<extra></extra>"),
-                  marker = list(color = 'rgb(255, 171, 51)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "NO2 Concentration, in ppb"),
-               barmode = 'group',
-               showlegend = FALSE,
-               annotations = list(
-                 list(x = 0, y = 1, 
-                      text = "EPA standard: 53 ppb",
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("NYC average: %1.2f ppb, in winter: %1.2f ppb, in summer: %1.2f ppb", 
-                                     no2_nyc_avg, no2_nyc_avg_w, no2_nyc_avg_su),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.90, 
-                      text = sprintf("%s average: %1.2f ppb, in winter: %1.2f ppb, in summer: %1.2f ppb", 
-                                     user_location$Neighborhood,
-                                     user_no2$user_avg, 
-                                     user_no2$user_avg_w,
-                                     user_no2$user_avg_su),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
     
-    output$so2 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_no2_so2)))
-      user_so2 = so2[so2$geo_area_id == user_location$UHF.Code,]
-      user_so2$user_avg = rowMeans(user_so2[,c(3:10)])
-      
-      # NYC so2 data
-      so2$nyc_avg = rowMeans(so2[, c(3:10)])
-      so2_nyc_avg = mean(so2$nyc_avg)
-      
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-      
-      plot_ly(so2, 
-              x = reorder(so2$nyc_avg, so2$geo_area_name), 
-              y = ~ nyc_avg, 
-              type = 'bar', 
-              text = so2$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "Average: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "SO2 Concentration, in ppb"),
-               barmode = 'group',
-               showlegend = FALSE,
-               annotations = list(
-                 list(x = 0, y = 1, 
-                      text = "EPA standard: 30 ppb",
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("NYC average: %1.2f ppb", 
-                                     so2_nyc_avg),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.90, 
-                      text = sprintf("%s average: %1.2f ppb", 
-                                     user_location$Neighborhood,
-                                     user_so2$user_avg),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
+    plot_ly(pm2.5, 
+            x = reorder(pm2.5$nyc_avg, pm2.5$geo_area_name), 
+            y = ~ nyc_avg, 
+            type = 'bar',
+            text = pm2.5$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "%{yaxis.title.text}: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "PM2.5"),
+             barmode = 'group',
+             annotations = list(
+               list(x = 0, y = 1,
+                    text = sprintf("EPA standard: 12 ug/m^3"),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("NYC average: %1.2f ug/m^3", 
+                                   pm2.5_nyc_avg),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.90, 
+                    text = sprintf("%s average: %1.2f ug/m^3", 
+                                   user_location$Neighborhood, user_pm2.5$user_avg_pm2.5),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
+  
+  output$er.pm2.5 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_pm25)))
+    user_pm2.5 = pm2.5[pm2.5$geo_area_id == user_location$UHF.Code,]
+    user_pm2.5$user_avg_er_adult = rowMeans(user_pm2.5[,c(11:13)])
+    user_pm2.5$user_avg_er_kid = rowMeans(user_pm2.5[,c(14:16)])
     
-    output$o3 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_o3)))
-      user_o3 = o3[o3$geo_area_id == user_location$UHF.Code,]
-      user_o3$user_avg_o3 = rowMeans(user_o3[,c(18:25)])
-      
-      # NYC o3 data
-      o3$nyc_avg = rowMeans(o3[, c(18:25)])
-      o3_nyc_avg = mean(o3$nyc_avg)
-      
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-      
-      plot_ly(o3, 
-              x = reorder(o3$nyc_avg, o3$geo_area_name), 
-              y = ~ nyc_avg, 
-              type = 'bar',
-              text = o3$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "%{yaxis.title.text}: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "Ozone Concentration, in ppb"),
-               barmode = 'group',
-               annotations = list(
-                 list(x = 0, y = 1,
-                      text = sprintf("EPA standard: 70 ppb"),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("NYC average: %1.2f ppb", 
-                                     o3_nyc_avg),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.90, 
-                      text = sprintf("%s average: %1.2f ppb", 
-                                     user_location$Neighborhood, user_o3$user_avg_o3),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
+    # NYC PM2.5 data
+    pm2.5$nyc_avg_adult = rowMeans(pm2.5[, c(11:13)])
+    pm2.5_nyc_avg_adult = mean(pm2.5$nyc_avg_adult)
+    pm2.5$nyc_avg_kid = rowMeans(pm2.5[, c(14:16)])
+    pm2.5_nyc_avg_kid = mean(pm2.5$nyc_avg_kid)
     
-    output$er.o3 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_o3)))
-      user_o3 = o3[o3$geo_area_id == user_location$UHF.Code,]
-      user_o3$user_avg_er_adult = rowMeans(user_o3[,c(3:5)])
-      user_o3$user_avg_er_kid = rowMeans(user_o3[,c(6:8)])
-      
-      # NYC o3 data
-      o3$nyc_avg_adult = rowMeans(o3[, c(3:5)])
-      o3_nyc_avg_adult = mean(o3$nyc_avg_adult)
-      o3$nyc_avg_kid = rowMeans(o3[, c(6:8)])
-      o3_nyc_avg_kid = mean(o3$nyc_avg_kid)
-      
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-      
-      plot_ly(o3, 
-              x = reorder(o3$nyc_avg_adult, o3$geo_area_name), 
-              y = ~ nyc_avg_adult, 
-              type = 'bar', 
-              text = o3$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "Adults - 18 yrs & older: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>% 
-        add_trace(y = ~nyc_avg_kid,  
-                  text = o3$geo_area_name,
-                  hovertemplate = paste("<b>%{text}</b><br>",
-                                        "Children - 0 to 17 yrs: %{y:1.2f}<br>",
-                                        "<extra></extra>"),
-                  marker = list(color = 'rgb(204,204,204)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "Asthma ER Visits per 100K adults/children"),
-               barmode = 'group',
-               showlegend = FALSE,
-               annotations = list(
-                 list(x = 0, y = 1, 
-                      text = sprintf("NYC average: %1.2f per 100K adults & %1.2f per 100K children", 
-                                     o3_nyc_avg_adult, o3_nyc_avg_kid),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("%s average: %1.2f per 100K adults &  %1.2f per 100K children", 
-                                     user_location$Neighborhood,
-                                     user_o3$user_avg_er_adult, 
-                                     user_o3$user_avg_er_kid),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
     
-    output$asthma.o3 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_o3)))
-      user_o3 = o3[o3$geo_area_id == user_location$UHF.Code,]
-      user_o3$user_avg_er_adult = rowMeans(user_o3[,c(9:11)])
-      user_o3$user_avg_er_kid = rowMeans(user_o3[,c(12:14)])
-      
-      # NYC o3 data
-      o3$nyc_avg_adult = rowMeans(o3[, c(9:11)])
-      o3_nyc_avg_adult = mean(o3$nyc_avg_adult)
-      o3$nyc_avg_kid = rowMeans(o3[, c(12:14)])
-      o3_nyc_avg_kid = mean(o3$nyc_avg_kid)
-      
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-      
-      plot_ly(o3, 
-              x = reorder(o3$nyc_avg_adult, o3$geo_area_name), 
-              y = ~ nyc_avg_adult, 
-              type = 'bar', 
-              text = o3$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "Adults - 18 yrs & older: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>% 
-        add_trace(y = ~nyc_avg_kid,  
-                  text = o3$geo_area_name,
-                  hovertemplate = paste("<b>%{text}</b><br>",
-                                        "Children - 0 to 17 yrs: %{y:1.2f}<br>",
-                                        "<extra></extra>"),
-                  marker = list(color = 'rgb(204,204,204)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "Asthma Hospitalization per 100K adults/children"),
-               barmode = 'group',
-               showlegend = FALSE,
-               annotations = list(
-                 list(x = 0, y = 1, 
-                      text = sprintf("NYC average: %1.2f per 100K adults & %1.2f per 100K children", 
-                                     o3_nyc_avg_adult, o3_nyc_avg_kid),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("%s average: %1.2f per 100K adults &  %1.2f per 100K children", 
-                                     user_location$Neighborhood,
-                                     user_o3$user_avg_er_adult, 
-                                     user_o3$user_avg_er_kid),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
+    plot_ly(pm2.5, 
+            x = reorder(pm2.5$nyc_avg_adult, pm2.5$geo_area_name), 
+            y = ~ nyc_avg_adult, 
+            type = 'bar', 
+            text = pm2.5$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "Adults - 18 yrs & older: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>% 
+      add_trace(y = ~nyc_avg_kid,  
+                text = pm2.5$geo_area_name,
+                hovertemplate = paste("<b>%{text}</b><br>",
+                                      "Children - 0 to 17 yrs: %{y:1.2f}<br>",
+                                      "<extra></extra>"),
+                marker = list(color = 'rgb(204,204,204)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "Asthma ER Visits per 100K adults/children"),
+             barmode = 'group',
+             showlegend = FALSE,
+             annotations = list(
+               list(x = 0, y = 1, 
+                    text = sprintf("NYC average: %1.2f per 100K adults & %1.2f per 100K children", 
+                                   pm2.5_nyc_avg_adult, pm2.5_nyc_avg_kid),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("%s average: %1.2f per 100K adults &  %1.2f per 100K children", 
+                                   user_location$Neighborhood,
+                                   user_pm2.5$user_avg_er_adult, 
+                                   user_pm2.5$user_avg_er_kid),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
+  
+  output$cardio.pm2.5 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_pm25)))
+    user_pm2.5 = pm2.5[pm2.5$geo_area_id == user_location$UHF.Code,]
+    user_pm2.5$user_avg_adult = rowMeans(user_pm2.5[,c(17:19)])
     
-    output$death.o3 = renderPlotly({
-      # Data based on User Inputs
-      user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_o3)))
-      user_o3 = o3[o3$geo_area_id == user_location$UHF.Code,]
-      user_o3$user_avg_adult = rowMeans(user_o3[,c(15:17)])
-      
-      # NYC o3 data
-      o3$nyc_avg_adult = rowMeans(o3[, c(15:17)])
-      o3_nyc_avg_adult = mean(o3$nyc_avg_adult)
-      
-      ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
-                showticklabels = FALSE, showgrid = FALSE)
-      
-      plot_ly(o3, 
-              x = reorder(o3$nyc_avg_adult, o3$geo_area_name), 
-              y = ~ nyc_avg_adult, 
-              type = 'bar', 
-              text = o3$geo_area_name,
-              hovertemplate = paste("<b>%{text}</b><br>",
-                                    "Adults - 30 yrs & older: %{y:1.2f}<br>",
-                                    "<extra></extra>"),
-              marker = list(color = 'rgb(49,130,189)')) %>%
-        layout(xaxis = ax,
-               yaxis = list(title = "Death Rate per 100K adults"),
-               barmode = 'group',
-               showlegend = FALSE,
-               annotations = list(
-                 list(x = 0, y = 1, 
-                      text = sprintf("NYC average: %1.2f per 100K adults", 
-                                     o3_nyc_avg_adult),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper'),
-                 list(x = 0, y = 0.95, 
-                      text = sprintf("%s average: %1.2f per 100K adults", 
-                                     user_location$Neighborhood,
-                                     user_o3$user_avg_adult),
-                      showarrow = FALSE, 
-                      xref = 'paper', 
-                      yref = 'paper')))
-    })
+    # NYC PM2.5 data
+    pm2.5$nyc_avg_adult = rowMeans(pm2.5[, c(17:19)])
+    pm2.5_nyc_avg_adult = mean(pm2.5$nyc_avg_adult)
+    
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
+    
+    plot_ly(pm2.5, 
+            x = reorder(pm2.5$nyc_avg_adult, pm2.5$geo_area_name), 
+            y = ~ nyc_avg_adult, 
+            type = 'bar', 
+            text = pm2.5$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "Adults - 40 yrs & older: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "Cardiovascular Hospitalizations per 100K adults"),
+             barmode = 'group',
+             showlegend = FALSE,
+             annotations = list(
+               list(x = 0, y = 1, 
+                    text = sprintf("NYC average: %1.2f per 100K adults", 
+                                   pm2.5_nyc_avg_adult),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("%s average: %1.2f per 100K adults", 
+                                   user_location$Neighborhood,
+                                   user_pm2.5$user_avg_adult),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
+  
+  output$resp.pm2.5 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_pm25)))
+    user_pm2.5 = pm2.5[pm2.5$geo_area_id == user_location$UHF.Code,]
+    user_pm2.5$user_avg_adult = rowMeans(user_pm2.5[,c(23:25)])
+    
+    # NYC PM2.5 data
+    pm2.5$nyc_avg_adult = rowMeans(pm2.5[, c(23:25)])
+    pm2.5_nyc_avg_adult = mean(pm2.5$nyc_avg_adult)
+    
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
+    
+    plot_ly(pm2.5, 
+            x = reorder(pm2.5$nyc_avg_adult, pm2.5$geo_area_name), 
+            y = ~ nyc_avg_adult, 
+            type = 'bar', 
+            text = pm2.5$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "Adults - 20 yrs & older: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "Respiratory Hospitalizations per 100K adults"),
+             barmode = 'group',
+             showlegend = FALSE,
+             annotations = list(
+               list(x = 0, y = 1, 
+                    text = sprintf("NYC average: %1.2f per 100K adults", 
+                                   pm2.5_nyc_avg_adult),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("%s average: %1.2f per 100K adults", 
+                                   user_location$Neighborhood,
+                                   user_pm2.5$user_avg_adult),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
+  
+  output$death.pm2.5 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_pm25)))
+    user_pm2.5 = pm2.5[pm2.5$geo_area_id == user_location$UHF.Code,]
+    user_pm2.5$user_avg_adult = rowMeans(user_pm2.5[,c(20:22)])
+    
+    # NYC PM2.5 data
+    pm2.5$nyc_avg_adult = rowMeans(pm2.5[, c(20:22)])
+    pm2.5_nyc_avg_adult = mean(pm2.5$nyc_avg_adult)
+    
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
+    
+    plot_ly(pm2.5, 
+            x = reorder(pm2.5$nyc_avg_adult, pm2.5$geo_area_name), 
+            y = ~ nyc_avg_adult, 
+            type = 'bar', 
+            text = pm2.5$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "Adults - 30 yrs & older: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "Death Rate per 100K adults"),
+             barmode = 'group',
+             showlegend = FALSE,
+             annotations = list(
+               list(x = 0, y = 1, 
+                    text = sprintf("NYC average: %1.2f per 100K adults", 
+                                   pm2.5_nyc_avg_adult),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("%s average: %1.2f per 100K adults", 
+                                   user_location$Neighborhood,
+                                   user_pm2.5$user_avg_adult),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
+  
+  output$no2 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_no2_so2)))
+    user_no2 = no2[no2$geo_area_id == user_location$UHF.Code,]
+    user_no2$user_avg = rowMeans(user_no2[,c(3:10)])
+    user_no2$user_avg_w = rowMeans(user_no2[,c(11:18)])
+    user_no2$user_avg_su = rowMeans(user_no2[,c(19:26)])
+    
+    # NYC no2 data
+    no2$nyc_avg = rowMeans(no2[, c(3:10)])
+    no2_nyc_avg = mean(no2$nyc_avg)
+    no2$nyc_avg_w = rowMeans(no2[, c(11:18)])
+    no2_nyc_avg_w = mean(no2$nyc_avg_w)
+    no2$nyc_avg_su = rowMeans(no2[, c(19:26)])
+    no2_nyc_avg_su = mean(no2$nyc_avg_su)
+    
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
+    
+    plot_ly(no2, 
+            x = reorder(no2$nyc_avg, no2$geo_area_name), 
+            y = ~ nyc_avg, 
+            type = 'bar', 
+            text = no2$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "Average: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>% 
+      add_trace(y = ~nyc_avg_w,  
+                text = no2$geo_area_name,
+                hovertemplate = paste("<b>%{text}</b><br>",
+                                      "Winter: %{y:1.2f}<br>",
+                                      "<extra></extra>"),
+                marker = list(color = 'rgb(31, 147, 78)')) %>% 
+      add_trace(y = ~nyc_avg_su,  
+                text = no2$geo_area_name,
+                hovertemplate = paste("<b>%{text}</b><br>",
+                                      "Summer: %{y:1.2f}<br>",
+                                      "<extra></extra>"),
+                marker = list(color = 'rgb(255, 171, 51)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "NO2 Concentration, in ppb"),
+             barmode = 'group',
+             showlegend = FALSE,
+             annotations = list(
+               list(x = 0, y = 1, 
+                    text = "EPA standard: 53 ppb",
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("NYC average: %1.2f ppb, in winter: %1.2f ppb, in summer: %1.2f ppb", 
+                                   no2_nyc_avg, no2_nyc_avg_w, no2_nyc_avg_su),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.90, 
+                    text = sprintf("%s average: %1.2f ppb, in winter: %1.2f ppb, in summer: %1.2f ppb", 
+                                   user_location$Neighborhood,
+                                   user_no2$user_avg, 
+                                   user_no2$user_avg_w,
+                                   user_no2$user_avg_su),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
+  
+  output$so2 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_no2_so2)))
+    user_so2 = so2[so2$geo_area_id == user_location$UHF.Code,]
+    user_so2$user_avg = rowMeans(user_so2[,c(3:10)])
+    
+    # NYC so2 data
+    so2$nyc_avg = rowMeans(so2[, c(3:10)])
+    so2_nyc_avg = mean(so2$nyc_avg)
+    
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
+    
+    plot_ly(so2, 
+            x = reorder(so2$nyc_avg, so2$geo_area_name), 
+            y = ~ nyc_avg, 
+            type = 'bar', 
+            text = so2$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "Average: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "SO2 Concentration, in ppb"),
+             barmode = 'group',
+             showlegend = FALSE,
+             annotations = list(
+               list(x = 0, y = 1, 
+                    text = "EPA standard: 30 ppb",
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("NYC average: %1.2f ppb", 
+                                   so2_nyc_avg),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.90, 
+                    text = sprintf("%s average: %1.2f ppb", 
+                                   user_location$Neighborhood,
+                                   user_so2$user_avg),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
+  
+  output$o3 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_o3)))
+    user_o3 = o3[o3$geo_area_id == user_location$UHF.Code,]
+    user_o3$user_avg_o3 = rowMeans(user_o3[,c(18:25)])
+    
+    # NYC o3 data
+    o3$nyc_avg = rowMeans(o3[, c(18:25)])
+    o3_nyc_avg = mean(o3$nyc_avg)
+    
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
+    
+    plot_ly(o3, 
+            x = reorder(o3$nyc_avg, o3$geo_area_name), 
+            y = ~ nyc_avg, 
+            type = 'bar',
+            text = o3$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "%{yaxis.title.text}: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "Ozone Concentration, in ppb"),
+             barmode = 'group',
+             annotations = list(
+               list(x = 0, y = 1,
+                    text = sprintf("EPA standard: 70 ppb"),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("NYC average: %1.2f ppb", 
+                                   o3_nyc_avg),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.90, 
+                    text = sprintf("%s average: %1.2f ppb", 
+                                   user_location$Neighborhood, user_o3$user_avg_o3),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
+  
+  output$er.o3 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_o3)))
+    user_o3 = o3[o3$geo_area_id == user_location$UHF.Code,]
+    user_o3$user_avg_er_adult = rowMeans(user_o3[,c(3:5)])
+    user_o3$user_avg_er_kid = rowMeans(user_o3[,c(6:8)])
+    
+    # NYC o3 data
+    o3$nyc_avg_adult = rowMeans(o3[, c(3:5)])
+    o3_nyc_avg_adult = mean(o3$nyc_avg_adult)
+    o3$nyc_avg_kid = rowMeans(o3[, c(6:8)])
+    o3_nyc_avg_kid = mean(o3$nyc_avg_kid)
+    
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
+    
+    plot_ly(o3, 
+            x = reorder(o3$nyc_avg_adult, o3$geo_area_name), 
+            y = ~ nyc_avg_adult, 
+            type = 'bar', 
+            text = o3$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "Adults - 18 yrs & older: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>% 
+      add_trace(y = ~nyc_avg_kid,  
+                text = o3$geo_area_name,
+                hovertemplate = paste("<b>%{text}</b><br>",
+                                      "Children - 0 to 17 yrs: %{y:1.2f}<br>",
+                                      "<extra></extra>"),
+                marker = list(color = 'rgb(204,204,204)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "Asthma ER Visits per 100K adults/children"),
+             barmode = 'group',
+             showlegend = FALSE,
+             annotations = list(
+               list(x = 0, y = 1, 
+                    text = sprintf("NYC average: %1.2f per 100K adults & %1.2f per 100K children", 
+                                   o3_nyc_avg_adult, o3_nyc_avg_kid),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("%s average: %1.2f per 100K adults &  %1.2f per 100K children", 
+                                   user_location$Neighborhood,
+                                   user_o3$user_avg_er_adult, 
+                                   user_o3$user_avg_er_kid),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
+  
+  output$asthma.o3 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_o3)))
+    user_o3 = o3[o3$geo_area_id == user_location$UHF.Code,]
+    user_o3$user_avg_er_adult = rowMeans(user_o3[,c(9:11)])
+    user_o3$user_avg_er_kid = rowMeans(user_o3[,c(12:14)])
+    
+    # NYC o3 data
+    o3$nyc_avg_adult = rowMeans(o3[, c(9:11)])
+    o3_nyc_avg_adult = mean(o3$nyc_avg_adult)
+    o3$nyc_avg_kid = rowMeans(o3[, c(12:14)])
+    o3_nyc_avg_kid = mean(o3$nyc_avg_kid)
+    
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
+    
+    plot_ly(o3, 
+            x = reorder(o3$nyc_avg_adult, o3$geo_area_name), 
+            y = ~ nyc_avg_adult, 
+            type = 'bar', 
+            text = o3$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "Adults - 18 yrs & older: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>% 
+      add_trace(y = ~nyc_avg_kid,  
+                text = o3$geo_area_name,
+                hovertemplate = paste("<b>%{text}</b><br>",
+                                      "Children - 0 to 17 yrs: %{y:1.2f}<br>",
+                                      "<extra></extra>"),
+                marker = list(color = 'rgb(204,204,204)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "Asthma Hospitalization per 100K adults/children"),
+             barmode = 'group',
+             showlegend = FALSE,
+             annotations = list(
+               list(x = 0, y = 1, 
+                    text = sprintf("NYC average: %1.2f per 100K adults & %1.2f per 100K children", 
+                                   o3_nyc_avg_adult, o3_nyc_avg_kid),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("%s average: %1.2f per 100K adults &  %1.2f per 100K children", 
+                                   user_location$Neighborhood,
+                                   user_o3$user_avg_er_adult, 
+                                   user_o3$user_avg_er_kid),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
+  
+  output$death.o3 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_o3)))
+    user_o3 = o3[o3$geo_area_id == user_location$UHF.Code,]
+    user_o3$user_avg_adult = rowMeans(user_o3[,c(15:17)])
+    
+    # NYC o3 data
+    o3$nyc_avg_adult = rowMeans(o3[, c(15:17)])
+    o3_nyc_avg_adult = mean(o3$nyc_avg_adult)
+    
+    ax = list(title = "Neighborhood", zeroline = FALSE, showline = FALSE, 
+              showticklabels = FALSE, showgrid = FALSE)
+    
+    plot_ly(o3, 
+            x = reorder(o3$nyc_avg_adult, o3$geo_area_name), 
+            y = ~ nyc_avg_adult, 
+            type = 'bar', 
+            text = o3$geo_area_name,
+            hovertemplate = paste("<b>%{text}</b><br>",
+                                  "Adults - 30 yrs & older: %{y:1.2f}<br>",
+                                  "<extra></extra>"),
+            marker = list(color = 'rgb(49,130,189)')) %>%
+      layout(xaxis = ax,
+             yaxis = list(title = "Death Rate per 100K adults"),
+             barmode = 'group',
+             showlegend = FALSE,
+             annotations = list(
+               list(x = 0, y = 1, 
+                    text = sprintf("NYC average: %1.2f per 100K adults", 
+                                   o3_nyc_avg_adult),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper'),
+               list(x = 0, y = 0.95, 
+                    text = sprintf("%s average: %1.2f per 100K adults", 
+                                   user_location$Neighborhood,
+                                   user_o3$user_avg_adult),
+                    showarrow = FALSE, 
+                    xref = 'paper', 
+                    yref = 'paper')))
+  })
 }
+
 
 # ---------------------------------------------------------------
 # Run the application
