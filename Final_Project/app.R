@@ -164,7 +164,7 @@ ui = fluidPage(
     tabPanel("Works Cited",
              titlePanel("Works Cited"),
              p("Burnett, R., Chen, H., Szyszkowicz, M., Fann, N., Hubbell, B., Pope, C. A., 3rd, Apte, J. S., Brauer, M., Cohen, A., Weichenthal, S., Coggins, J., Di, Q., Brunekreef, B., Frostad, J., Lim, S. S., Kan, H., Walker, K. D., Thurston, G. D., Hayes, R. B., Lim, C. C., … Spadaro, J. V. (2018). Global Estimates of Mortality Associated with Long-Term Exposure To Outdoor Fine Particulate Matter. Proceedings of the National Academy of Sciences of the United States of America, 115(38), 9592–9597. https://doi.org/10.1073/pnas.1803222115"),
-              p("EPA. Criteria Air Pollutants (https://www.epa.gov/criteria-air-pollutants). U. S. Environmental Protection Agency. Accessed 28 October 2020."),
+             p("EPA. Criteria Air Pollutants (https://www.epa.gov/criteria-air-pollutants). U. S. Environmental Protection Agency. Accessed 28 October 2020."),
              p("EPA. Summary of the Clean Air Act (https://www.epa.gov/laws-regulations/summary-clean-air-act). U.S.C. §7401 et seq. (1970). The official text of the CAA is available in the United States Code on FDSys, from the US Government Printing Office. Accessed 28 October 2020."),
              p("NYC OpenData. NYCCAS Air Pollution Rasters. Department of Health and Mental Hygiene (DOHMH).Updated March 3, 2020. Accessed 28 October 2020."),
              p("WHO, (2005). WHO Air Quality Guidelines for Particulate Matter, Ozone, Nitrogen Dioxide, and Sulfur Dioxide. World Health Organization: Geneva."),
@@ -755,18 +755,6 @@ server = function(input, output, session) {
     })
 }
 
-
 # ---------------------------------------------------------------
 # Run the application
 shinyApp(ui = ui, server = server)
-
-
-
-
-
-	
-	
-	
-	
-	
-	
