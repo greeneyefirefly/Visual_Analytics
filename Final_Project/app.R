@@ -97,14 +97,14 @@ ui = fluidPage(
     tabPanel("What's in my air?",
              titlePanel("The Effects of Outdoor Air Quality on Health in New York City"),
              p("Clean air is vital as it provides oxygen and other gases that sustain the delicate balance of life on Earth. However, the quality of the air can be affected by air pollution. Air pollution occurs when certain gases and particles build up in the atmosphere to such levels that they can cause disease, death to humans, damage to other living organisms such as food crops, or damage to the natural or man-made environment. These substances, known as pollutants, can be solid particles, liquid droplets, or gases, and are classified as primary or secondary pollutants."),
-             p("The primary pollutant tends to come from man-made sources, including the burning of fossil fuels such as coal, oil, petrol or diesel, but can also come from natural sources such as volcanic eruptions and forest fires. Unlike primary pollutants, secondary pollutants are not emitted directly. Rather, they form in the air when primary pollutants as a result of chemical reactions. The federal Clean Air Act authorized the Environmental Protection Agency (EPA) to set National Ambient Air Quality Standards (NAAQS) for pollutants that threaten human health and public welfare throughout the country, (Clean Air Act, EPA). EPA established NAAQS for six most common pollutants called criteria air pollutants: ground-level ozone, fine particulate matter, carbon monoxide, nitrogen dioxide, sulfur dioxide, and volatile organic compounds (eg Benzene and Formaldehyde), among which ground level ozone, fine particulate and nitrogen dioxide are the most widespread health threats."),
+             p("The primary pollutant tends to come from man-made sources, including the burning of fossil fuels such as coal, oil, petrol or diesel, but can also come from natural sources such as volcanic eruptions and forest fires. Unlike primary pollutants, secondary pollutants are not emitted directly. Rather, they form in the air when primary pollutants as a result of chemical reactions. The federal Clean Air Act authorized the Environmental Protection Agency (EPA) to set National Ambient Air Quality Standards (NAAQS) for pollutants that threaten human health and public welfare throughout the country, (Clean Air Act, EPA). EPA established NAAQS for six most common pollutants called criteria air pollutants: ground-level ozone, fine particulate matter, carbon monoxide, nitrogen dioxide, sulfur dioxide, and volatile organic compounds (eg Benzene and Formaldehyde), among which ground-level ozone, fine particulate, and nitrogen dioxide are the most widespread health threats."),
              br(),
              h4(p(strong("NYC Air Pollution Data"))),
-             p("Inspired by NYC Environmental Health Air Quality Explorer, the aim of this project is to interactively present data on primary and secondary air pollutants index, namely for PM2.5, nitrogen dioxide (NO2), volatile organic compounds, and ozone, to depict their health risks on New York City. More specifically, it aims to geographically map user's neighborhood air quality and compare it to New York City and EPA's annual standards. The data set is from NYCCAS Air Pollution Rasters on NYC OpenData. It is a citywide raster files of annual average predicted surface for nitrogen dioxide (NO2), fine particulate matter (PM2.5), black carbon (BC), and nitrogen oxides (NOx); summer average for ozone (O3) and winter average for sulfure dioxide (SO2). There are surface predictions generated from Land Use Regression modeling of December 2008- December 2015 (years 1-7) New York Community Air Survey monitoring data. As these are estimated annual average levels produced by a statistical model, they are not comparable to short term localized monitoring or monitoring done for regulatory purposes."),
+             p("Inspired by NYC Environmental Health Air Quality Explorer, this project aims to interactively present data on primary and secondary air pollutants index, namely for PM2.5, nitrogen dioxide (NO2), volatile organic compounds, and ozone, to depict their health risks on New York City. More specifically, it aims to geographically map the user's neighborhood air quality and compare it to New York City and EPA's annual standards. The data set is from NYCCAS Air Pollution Rasters on NYC OpenData. It is a citywide raster file of annual average predicted surface for nitrogen dioxide (NO2), fine particulate matter (PM2.5), black carbon (BC), and nitrogen oxides (NOx); summer average for ozone (O3) and winter average for sulfur dioxide (SO2). There are surface predictions generated from Land Use Regression modeling of December 2008- December 2015 (years 1-7) New York Community Air Survey monitoring data. As these are estimated annual average levels produced by a statistical model, they are not comparable to short term localized monitoring or monitoring done for regulatory purposes."),
              br(),
              h3(p(strong("Your Neighborhood Air Quality", 
                          style = "color:black")), align = "center"),
-             p("The map below is of New York City. The air quality monitoring network data allows a comparision of the concentraion of the most harmful air toxins among neighborhoods. Use the map to compare your neighborhood's levels of harmful air toxin with that of New York City", align = "center"),
+             p("The map below is of New York City. The air quality monitoring network data allows a comparison of the concentration of the most harmful air toxins among neighborhoods. Use the map to compare your neighborhood's levels of harmful air toxin with that of New York City", align = "center"),
              br(),
              sidebarPanel(
                textInput('user_zip', "Enter your zipcode", value = "11208"),
@@ -134,16 +134,20 @@ ui = fluidPage(
     
     tabPanel("NO2 & SO2",
              titlePanel("Nitrogen and Sulfur Dioxide Effects on Health"), 
-             p("Moreover, in significant concentrations, primary pollutant nitrogen dioxide is highly toxic. It can cause serious lung damage with a delayed effect. It also plays a major role in the atmospheric reactions that produce ground-level ozone or smog. Whereas sulfur dioxide pollution is known to cause heart disease and bronchitis. Pollutants have even more adverse effect when in moderate concentrations as it can lead to a fall in lung function in asthmatics. Sulfur dioxide pollution is considered more harmful when particulate and other pollution concentrations are high. This is known as the cocktail effect. Increasing concentration of these gases in the atmosphere also causes global warming and climate change as dinitrogen monoxide has 310 times more global warming potentiality than carbon dioxide (Sen et al, 2017)."),
+             p("Moreover, in significant concentrations, primary pollutant nitrogen dioxide is highly toxic. It can cause serious lung damage with a delayed effect. It also plays a major role in the atmospheric reactions that produce ground-level ozone or smog. Whereas sulfur dioxide pollution is known to cause heart disease and bronchitis. Pollutants have even more adverse effects when in moderate concentrations as it can lead to a fall in lung function in asthmatics. Sulfur dioxide pollution is considered more harmful when particulate and other pollution concentrations are high. This is known as the cocktail effect. Increasing concentration of these gases in the atmosphere also causes global warming and climate change as dinitrogen monoxide has 310 times more global warming potentiality than carbon dioxide (Sen et al, 2017)."),
              br(),
              h4(p(strong("Your Neighborhood NO2 & SO2 Concentration", style = "color:black")), 
                 align = "center"),
-             p("For NO2 and SO2, the gaseous pollutants in NYC are measured in units of parts per billion (ppb). NYC meets the EPA's annual average standard, but short-term concentrations sometimes exceed this threshold. Along with the annual averages, they also include the estimated number for Summer and Winter seasons (where avaliable). Use the graph to estimate a neighborhood's health risk as it pertains to their concentrations."),
+             p("For NO2 and SO2, the gaseous pollutants in NYC are measured in units of parts per billion (ppb). NYC meets the EPA's annual average standard, but short-term concentrations sometimes exceed this threshold. Along with the annual averages, they also include the estimated number for the Summer and Winter seasons (where available). Use the graph to estimate a neighborhood's health risk as it pertains to their concentrations."),
              sidebarPanel(
                textInput('user_zip_no2_so2', 'Enter your zipcode', value = "11208")),
              mainPanel(
                tabsetPanel(
                  tabPanel("Nitrogen Dioxide", plotlyOutput("no2")),
+                 tabPanel("Seasonal Nitrogen Dioxide", 
+                          plotlyOutput("sea.avg.no2"),
+                          plotlyOutput("sea.winter.no2"),
+                          plotlyOutput("sea.summer.no2")),
                  tabPanel("Sulfur Dioxide", plotlyOutput("so2"))
                )
              ),
@@ -173,7 +177,7 @@ ui = fluidPage(
              p("1. Burnett, R., Chen, H., Szyszkowicz, M., Fann, N., Hubbell, B., Pope, C. A., 3rd, Apte, J. S., Brauer, M., Cohen, A., Weichenthal, S., Coggins, J., Di, Q., Brunekreef, B., Frostad, J., Lim, S. S., Kan, H., Walker, K. D., Thurston, G. D., Hayes, R. B., Lim, C. C., … Spadaro, J. V. (2018).", em(" Global Estimates of Mortality Associated with Long-Term Exposure To Outdoor Fine Particulate Matter.")," Proceedings of the National Academy of Sciences of the United States of America, 115(38), 9592–9597. https://doi.org/10.1073/pnas.1803222115"),
              p("2. EPA.", em(" Criteria Air Pollutants")," (https://www.epa.gov/criteria-air-pollutants). U. S. Environmental Protection Agency. Accessed 28 October 2020."),
              p("3. EPA.", em(" Summary of the Clean Air Act")," (https://www.epa.gov/laws-regulations/summary-clean-air-act). U.S.C. §7401 et seq. (1970). The official text of the CAA is available in the United States Code on FDSys, from the US Government Printing Office. Accessed 28 October 2020."),
-             p("4. NYC OpenData.", em(" NYCCAS Air Pollution Rasters.")," Department of Health and Mental Hygiene (DOHMH).Updated March 3, 2020. Accessed 28 October 2020."),
+             p("4. NYC OpenData.", em(" NYCCAS Air Pollution Rasters.")," Department of Health and Mental Hygiene (DOHMH). Updated March 3, 2020. Accessed 28 October 2020."),
              p("5. WHO, (2005).", em(" WHO Air Quality Guidelines for Particulate Matter, Ozone, Nitrogen Dioxide, and Sulfur Dioxide.")," World Health Organization: Geneva."),
              p("6. Sen, Abhishek & Khan, Indrani & Kundu, Debajyoti & Das, Kousik & Datta, Jayanta. (2017). ", em("Ecophysiological evaluation of tree species for biomonitoring of air quality and identification of air pollution-tolerant species.")," Environmental Monitoring and Assessment. 189. 1-15. 10.1007/s10661-017-5955-x."),
     )
@@ -483,19 +487,19 @@ server = function(input, output, session) {
             hovertemplate = paste("<b>%{text}</b><br>",
                                   "Average: %{y:1.2f}<br>",
                                   "<extra></extra>"),
-            marker = list(color = 'rgb(49,130,189)')) %>% 
+            marker = list(color = 'rgb(163, 163, 163)')) %>% 
       add_trace(y = ~nyc_avg_w,  
                 text = no2$geo_area_name,
                 hovertemplate = paste("<b>%{text}</b><br>",
                                       "Winter: %{y:1.2f}<br>",
                                       "<extra></extra>"),
-                marker = list(color = 'rgb(31, 147, 78)')) %>% 
+                marker = list(color = 'rgb(81, 73, 216)')) %>% 
       add_trace(y = ~nyc_avg_su,  
                 text = no2$geo_area_name,
                 hovertemplate = paste("<b>%{text}</b><br>",
                                       "Summer: %{y:1.2f}<br>",
                                       "<extra></extra>"),
-                marker = list(color = 'rgb(255, 171, 51)')) %>%
+                marker = list(color = 'rgb(208, 216, 73)')) %>%
       layout(xaxis = ax,
              yaxis = list(title = "NO2 Concentration, in ppb"),
              barmode = 'group',
@@ -521,6 +525,95 @@ server = function(input, output, session) {
                     showarrow = FALSE, 
                     xref = 'paper', 
                     yref = 'paper')))
+  })
+  
+  output$sea.avg.no2 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_no2_so2)))
+    user_no2 = no2[no2$geo_area_id == user_location$UHF.Code,]
+    user_no2$user_avg = rowMeans(user_no2[,c(3:10)])
+
+    # NYC no2 data
+    no2$nyc_avg = rowMeans(no2[, c(3:10)])
+    no2_nyc_avg = mean(no2$nyc_avg)
+
+    plot_ly(text = no2$geo_area_name) %>% 
+      add_trace(type = "choropleth", 
+                geojson = nyc_districts,
+                locations = no2$geo_area_id,
+                z = no2$nyc_avg,
+                colorscale = "Viridis",
+                featureidkey = "properties.uhfcode") %>% 
+      layout(geo = list(fitbounds = "locations", visible = FALSE), 
+             title = "Average NO2",
+             autosize = TRUE,
+             annotations = list(
+               list(x = 0 , y = 1, 
+                    text = sprintf("%s Average = %1.2f", 
+                                   user_location$Neighborhood, user_no2$user_avg), 
+                    showarrow = FALSE, xref = 'paper', 
+                    yref = 'paper', font = list(size = 13)))) %>% 
+      colorbar(title = "NO2 Levels, in ppb")
+  })
+  
+  output$sea.winter.no2 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_no2_so2)))
+    user_no2 = no2[no2$geo_area_id == user_location$UHF.Code,]
+    user_no2$user_avg_w = rowMeans(user_no2[,c(11:18)])
+
+    # NYC no2 data
+    no2$nyc_avg_w = rowMeans(no2[, c(11:18)])
+    no2_nyc_avg_w = mean(no2$nyc_avg_w)
+
+    plot_ly(text = no2$geo_area_name) %>% 
+      add_trace(type = "choropleth", 
+                geojson = nyc_districts,
+                locations = no2$geo_area_id,
+                z = no2$nyc_avg_w,
+                colorscale = "Viridis",
+                featureidkey = "properties.uhfcode") %>% 
+      layout(geo = list(fitbounds = "locations", visible = FALSE), 
+             title = "Average NO2 Levels in Winter",
+             autosize = TRUE,
+             annotations = list(
+               list(x = 0 , y = 1, 
+                    text = sprintf("%s Winter Levels = %1.2f", 
+                                   user_location$Neighborhood, user_no2$user_avg_w), 
+                    showarrow = FALSE, xref = 'paper', 
+                    yref = 'paper', font = list(size = 13)))) %>% 
+      colorbar(title = "NO2 Levels, in ppb")
+    
+  })
+  
+  output$sea.summer.no2 = renderPlotly({
+    # Data based on User Inputs
+    user_location = zipcodes %>% filter(str_detect(Zipcode, as.character(input$user_zip_no2_so2)))
+    user_no2 = no2[no2$geo_area_id == user_location$UHF.Code,]
+    user_no2$user_avg_su = rowMeans(user_no2[,c(19:26)])
+    
+    # NYC no2 data
+    no2$nyc_avg_su = rowMeans(no2[, c(19:26)])
+    no2_nyc_avg_su = mean(no2$nyc_avg_su)
+    
+   plot_ly(text = no2$geo_area_name) %>% 
+      add_trace(type = "choropleth", 
+                geojson = nyc_districts,
+                locations = no2$geo_area_id,
+                z = no2$nyc_avg_su,
+                colorscale = "Viridis",
+                featureidkey = "properties.uhfcode") %>% 
+      layout(geo = list(fitbounds = "locations", visible = FALSE), 
+             title = "Average NO2 Levels in Summer",
+             autosize = TRUE,
+             annotations = list(
+               list(x = 0 , y = 1, 
+                    text = sprintf("%s Summer Levels = %1.2f", 
+                                   user_location$Neighborhood, user_no2$user_avg_su), 
+                    showarrow = FALSE, xref = 'paper', 
+                    yref = 'paper', font = list(size = 13)))) %>% 
+      colorbar(title = "NO2 Levels, in ppb")
+    
   })
   
   output$so2 = renderPlotly({
