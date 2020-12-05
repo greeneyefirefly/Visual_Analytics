@@ -553,7 +553,7 @@ server = function(input, output, session) {
                                    user_location$Neighborhood, user_no2$user_avg), 
                     showarrow = FALSE, xref = 'paper', 
                     yref = 'paper', font = list(size = 13)))) %>% 
-      colorbar(title = "NO2 Levels, in ppb")
+      colorbar(title = "NO2 Levels, in ppb", limits = c(5, 40))
   })
   
   output$sea.winter.no2 = renderPlotly({
@@ -582,7 +582,7 @@ server = function(input, output, session) {
                                    user_location$Neighborhood, user_no2$user_avg_w), 
                     showarrow = FALSE, xref = 'paper', 
                     yref = 'paper', font = list(size = 13)))) %>% 
-      colorbar(title = "NO2 Levels, in ppb")
+      colorbar(title = "NO2 Levels, in ppb", limits = c(5, 40))
     
   })
   
@@ -612,7 +612,7 @@ server = function(input, output, session) {
                                    user_location$Neighborhood, user_no2$user_avg_su), 
                     showarrow = FALSE, xref = 'paper', 
                     yref = 'paper', font = list(size = 13)))) %>% 
-      colorbar(title = "NO2 Levels, in ppb")
+      colorbar(title = "NO2 Levels, in ppb", limits = c(5, 40))
     
   })
   
